@@ -1,0 +1,15 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void main() {
+
+double cbr; //Cue ball radius
+double obr; //Object ball radius
+double theta0; //Essentially the trajectory of the cue ball with our assumptions, technically cue trajectory
+double[] cbc; //Cue ball coordinates, The first array value will be the x coordinate, the second y
+double[] obc; //Object ball coordinates, The first array value will be the x coordinate, the second y
+
+
+
+return;
+}
