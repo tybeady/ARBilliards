@@ -4,17 +4,19 @@ import math
 
 def CollisionMath():
 
-    D = 57.15 #Cue and object ball radii
-    theta0 = 45 #Essentially the trajectory of the cue ball with our assumptions, technically cue trajectory
-    cbc = [100,100] #Cue ball coordinates. The first array value will be the x coordinate, the second y
-    obc = [200,200] #Object ball coordinates. The first array value will be the x coordinate, the second y
-    ballCoords = [cbc,obc]
+    D = 57.15 #Combined cue and object ball radii
+    theta0 = math.pi/4 = thetaf[0] #Essentially the trajectory of the cue ball with our assumptions, technically cue trajectory
+    cbc = (100,100) #Cue ball coordinates. The first array value will be the x coordinate, the second y
+    obc = (200,200) #Object ball coordinates. The first array value will be the x coordinate, the second y
+    ballCoords = [cbc,obc] #Simulate the list to be received from Tyler
     BeginnerError = math.pi/180 #0.2 degree offset
     IntermediateError = math.pi/360 #0.1 degree offset
     ExpertError = math.pi/3600 #0.01 degree offset
-        
+    #CueEndTypes: 0 = Wall Collision, 1 = Object Ball Collision, 2 = No Collision (Should stop along this line)
+
     def CueWallCollision(): #Use this when no object ball is identified along the cue trajectory
     #This whole portion is assuming the grid is layed out correctly on the table. The limits are, for the sake of this code: [0,511] (width) and [0,255] (height)
+    #REMEMBER TO INCLUDE the walla being treated as D/2 closer to the center to account for the ball's radius
         if (0 < theta0 < (math.pi/2)) #Aimed at top right corner of the table
             deltxtr = 511-cbc[0] #Triangle height to top right pocket
             deltytr = 255-cbc[1] #Triangle base length to top right pocket
@@ -61,26 +63,49 @@ def CollisionMath():
                 pass
         else 
             thetaf = theta0+math.pi #They're just gonna nail the wall head on
+            CueEndType[i] = 1
             #I'm worried about what'll happen if we hit the ball straight to a pocket when shot right next to the wall
-    
     sys.exit(CueWallCollision())
+    
+    def ObjWallCollision(): #Use this when no object ball is identified along the cue trajectory
+           #Basically cue collision
+    sys.exit(ObjWallCollision())
 
-    def CueObjCollision(): #Use this when an object ball is identified along the cue trajectory
+    def CueObjCollision(i, deltx, delty, thetaf): #Use this when an object ball is identified along the cue trajectory
     #Uses radians, can be switched to degrees if needed
         deltx = obc[0]-cbc[0] #Triangle height
         delty = obc[1]-cbc[1] #Triangle base length	
         hypotenuse = math.sqrt( (math.pow(deltx,2) - math.pow(delty,2) ) ) #Distance formula measuring hypotenuse
-	
-        theta1 = math.atan(deltx/delty)-theta0 #Draw interior angle of projected ob placement
+        theta1 = math.atan(deltx/delty)-thetaf[i] #Draw interior angle of projected ob placement
         theta2 = math.asin((hypotenuse*math.sin(theta1))/(D)) #Draw interior angle of projected ob placement
         theta2min = (math.pi-theta1)/2 #This is the minimum value theta3 can be
+        theta3 = 180 - theta1 - theta2
+        thetaDelta = 90 - thetaf[i]
+        thetaH = theta3 - thetaDelta
+        
+        endcuexarray[i] = D*cos(thetaH) = startcuexarray[i+1]
+        endcueyarray[i] = D*sin(thetaH) = startcueyarray[i+1]
         if  theta2min >= theta2:
-            thetaf = (math.pi-theta2)+theta0
+            thetaf = (math.pi-theta2)+thetaf[i+1]
         else:
-            thetaf = theta0
-        return Cuex
-        return Objectx
-            
+            thetaf[i+1] = thetaf[i]
+        if (theta2 > 0) #Aimed to the right of the object ball
+            thetaTangent[i+1] = thetaf[i+1] - math.pi/2
+        elif (theta2 < 0) #Aimed to the left of the object ball
+            thetaTangent[i+1] = thetaf[i+1] + math.pi/2
+        else: #Aimed directly at the center of the object ball
+            thetaTangent[i+1] = thetaf[i+1]
+        CueEndType[i] = 0
+        
+        return endcuexarray[i], endcueyarray[i], thetaf[i+1], CueEndType[i]
+        
+    sys.exit(CueObjCollision())
+
+    def ObjObjCollision(): #Use this when an object ball is identified along the object trajectory
+    #Uses radians, can be switched to degrees if needed
+        #Should be similar to cue-obj, but I don't want to clutter things while that's still in progress
+        obc = "temporary"
+        
     sys.exit(CueObjCollision())
 
     def UserErrorFactor():
@@ -97,11 +122,11 @@ def CollisionMath():
         
     sys.exit(UserErrorFactor())
 
-    def CreateHoloLensShipPackage():
+    def CreateHololensShipPackage():
     
-        Cue = {"start" : (x1,y1), "end" : (x2,y2), "endType" : EndType}
-        Object = {"start" : (x1,y1), "end" : (x2,y2), "endType" : EndType}
+        Cue = {"start" : (startcuexarray,startcueyarray), "end" : (endcuexarray,endcueyarray), "endType" : CueEndType}
+        Object = {"start" : (startobjxarray,startobjyarray), "end" : (endobjxarray,endobjyarray), "endType" : ObjEndType}
     
     sys.exit(CreateCuePackage())
-    
+
 sys.exit(CollisionMath())

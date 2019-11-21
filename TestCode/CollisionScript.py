@@ -1,15 +1,22 @@
 import sys
 import numpy
 import math
-import CollisionHeader.py
+import CollisionHeader
 
 def main():
+
+    i
+    CueStartX[]
+    CueStartY[]
+    ObjStartX[]
+    ObjStartY[]
+    thetaf[]
 
     intake values from Tyler
     collisioncheckscript for cueball collisions (only run x times based on strikestrength)
         collision, run collisionscript, check x
             return cuedatatype and objectdatatype
-            sollisioncheckscript again
+            collisioncheckscript again
         wall, run wallscript
             return cuedatatype
             collisioncheckscript
