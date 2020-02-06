@@ -25,9 +25,44 @@ class ball():
 		self._diameter = diameter #scaling for vector math purposes
 		self._coordinates = coordinates #(x,y)
 		self._vector = vector #see vector class
+        
+    def getVector(self):
+        return self._vector
 	
 	def ballCollision(self, collideeBall):
+    
+        # Run calculations for active ball collision
+        if collideeBall._active = TRUE:
+            pass
         
+        # Run calculations for inactive ball collision
+        else:
+            # Create a triangle to model resultant vectors
+            deltx = self._coordinates[1] - collideeBall._coordinates[1]
+            delty = self._coordinates[2] - collideeBall._coordinates[2]
+            hypot = math.sqrt( (math.pow(deltx,2) - math.pow(delty,2) ) ) # Can be thought of as the distance between balls
+            # Referring to model triangle jpg, draw resulting collision angles
+            theta1 = math.atan(deltx/delty)-self._direction
+            theta2 = math.asin((hypot*math.sin(theta1))/(self._diameter))
+            theta2min = (math.pi-theta1)/2
+            theta3 = math.pi - theta1 - theta2
+            thetaDelta = math.pi/2 - self._direction
+            thetaH = theta3 - thetaDelta
+            # Calculate new starting coordinates and vectors
+            if  theta2min >= theta2:
+                newColliderThetaf = (math.pi-theta2)+self.direction
+            else:
+                newColliderThetaf = self.direction
+            if (theta2 > 0): #Aimed to the right of the object ball
+                newCollideeThetaf = newColliderThetaf - math.pi/2
+            elif (theta2 < 0): #Aimed to the left of the object ball
+                newCollideeThetaf = newColliderThetaf + math.pi/2
+            else: #Aimed directly at the center of the object ball
+                newCollideeThetaf = newColliderThetaf
+            newColliderCoord[1] = self._coordinates[1] + self._diameter*cos(thetaH)
+            newColliderCoord[2] = self._coordinates[2] + self._diameter*sin(thetaH)
+        return newCollideeCoordThetaf, newColliderThetaf, newColliderCoord
+
 		    # def CueObjCollision(i, deltx, delty, thetaf): #Use this when an object ball is identified along the cue trajectory
     # #Uses radians, can be switched to degrees if needed
         # deltx = obc[0]-cbc[0] #Triangle height
@@ -59,9 +94,10 @@ class ball():
     # sys.exit(CueObjCollision())
 		
 		#TODO: add update to self._vector
-		pass
 	
 	def wallCollision(self, wallResistance):
+    
+        
 
     # def CueWallCollision(): #Use this when no object ball is identified along the cue trajectory
     # #This whole portion is assuming the grid is layed out correctly on the table. The limits are, for the sake of this code: [0,511] (width) and [0,255] (height)
@@ -157,10 +193,10 @@ class table():
 	def takeStep(self):
 		nextEvent = self._events.pop(0)
 	
-	def addEvent(self,event):
+	def addEvent(self,events):
 		if self._events:
 			for i,e in enumerate(self._events):
-				if e.time > event.time:
+				if e.time > events.time:
 					self._events.insert(i-1,event.time)
 					return
 		self._events.append(event.time)
