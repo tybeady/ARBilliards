@@ -38,8 +38,8 @@ class ball():
         # Run calculations for inactive ball collision
         else:
             # Create a triangle to model resultant vectors
-            deltx = self._coordinates[1] - collideeBall._coordinates[1]
-            delty = self._coordinates[2] - collideeBall._coordinates[2]
+            deltx = self._coordinates[0] - collideeBall._coordinates[0]
+            delty = self._coordinates[1] - collideeBall._coordinates[1]
             hypot = math.sqrt( (math.pow(deltx,2) - math.pow(delty,2) ) ) # Can be thought of as the distance between balls
             # Referring to model triangle jpg, draw resulting collision angles
             theta1 = math.atan(deltx/delty)-self._direction
@@ -59,8 +59,12 @@ class ball():
                 newCollideeThetaf = newColliderThetaf + math.pi/2
             else: #Aimed directly at the center of the object ball
                 newCollideeThetaf = newColliderThetaf
-            newColliderCoord[1] = self._coordinates[1] + self._diameter*cos(thetaH)
-            newColliderCoord[2] = self._coordinates[2] + self._diameter*sin(thetaH)
+            newColliderCoord[0] = self._coordinates[0] + self._diameter*cos(thetaH)
+            newColliderCoord[1] = self._coordinates[1] + self._diameter*sin(thetaH)
+            #TODO: Add vector magnitude degernation
+            #TODO: Add in time implementation
+            #TODO: add update to self._vector
+            
         return newCollideeCoordThetaf, newColliderThetaf, newColliderCoord
 
 		    # def CueObjCollision(i, deltx, delty, thetaf): #Use this when an object ball is identified along the cue trajectory
@@ -93,11 +97,21 @@ class ball():
         
     # sys.exit(CueObjCollision())
 		
-		#TODO: add update to self._vector
 	
-	def wallCollision(self, wallResistance):
     
-        
+	def wallCollision(self, wallResistance, cornerCoords):
+    
+        if (0 < self.direction < (math.pi/2)) #Aimed at top right corner of the table
+            deltxtr = 511-cbc[0] #Triangle height to top right pocket
+            deltytr = 255-cbc[1] #Triangle base length to top right pocket
+            hypotenusetr = math.sqrt( (math.pow(deltxtr,2) - math.pow(deltytr,2) ) ) #Distance formula measuring hypotenuse to top right pocket
+            theta1 = math.atan(deltxtr/deltytr) #angle from cue ball to tr pocket
+            if (self.direction < theta1) #Hitting the right wall
+                thetaf = (math.pi/2)+theta0
+            elif (theta0 > theta1) #Hitting the top wall
+                thetaf = (math.pi/2)-theta0
+            else #Gonna scratch it, THROW IN WARNING?
+                pass
 
     # def CueWallCollision(): #Use this when no object ball is identified along the cue trajectory
     # #This whole portion is assuming the grid is layed out correctly on the table. The limits are, for the sake of this code: [0,511] (width) and [0,255] (height)
@@ -152,7 +166,6 @@ class ball():
             # #I'm worried about what'll happen if we hit the ball straight to a pocket when shot right next to the wall
     # sys.exit(CueWallCollision())
 		pass
-
 		
 class events():
 	def __init__(self, time, startCoordinate, stopCoordinate, ballIndex, secondaryBallIdex = None):
