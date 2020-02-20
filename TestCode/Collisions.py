@@ -7,6 +7,10 @@ class CollisionMath():
 		pass
 
 
+import sys
+import numpy
+import math
+
 class vector():
 
 	def __init__(self, magnitude = None, direction = None):
@@ -61,7 +65,7 @@ class ball():
                 newCollideeThetaf = newColliderThetaf
             newColliderCoord[0] = self._coordinates[0] + self._diameter*cos(thetaH)
             newColliderCoord[1] = self._coordinates[1] + self._diameter*sin(thetaH)
-            #TODO: Add vector magnitude degernation
+            #TODO: Add vector magnitude degeneration
             #TODO: Add in time implementation
             #TODO: add update to self._vector
             
@@ -101,15 +105,53 @@ class ball():
     
 	def wallCollision(self, wallResistance, cornerCoords):
     
+        # #This whole portion is assuming the grid is layed out correctly on the table. The limits are, for the sake of this code: [0,511] (width) and [0,255] (height)
+        # #REMEMBER TO INCLUDE the walla being treated as D/2 closer to the center to account for the ball's radius
         if (0 < self.direction < (math.pi/2)) #Aimed at top right corner of the table
-            deltxtr = 511-cbc[0] #Triangle height to top right pocket
-            deltytr = 255-cbc[1] #Triangle base length to top right pocket
-            hypotenusetr = math.sqrt( (math.pow(deltxtr,2) - math.pow(deltytr,2) ) ) #Distance formula measuring hypotenuse to top right pocket
+            deltxtr = cornerCoords[x2] - self.coordinates[x] #Triangle height to top right pocket
+            deltytr = cornerCoords[y2] - self.coordinates[y] #Triangle base length to top right pocket
+            hypot = math.sqrt( (math.pow(deltxtr,2) - math.pow(deltytr,2) ) ) #Distance formula measuring hypotenuse to top right pocket
             theta1 = math.atan(deltxtr/deltytr) #angle from cue ball to tr pocket
             if (self.direction < theta1) #Hitting the right wall
                 thetaf = (math.pi/2)+theta0
             elif (theta0 > theta1) #Hitting the top wall
                 thetaf = (math.pi/2)-theta0
+            else #Gonna scratch it, THROW IN WARNING?
+                pass
+                
+         elif ((math.pi/2) < theta0 < math.pi) #Aimed at top left corner of table
+            deltxtl = cornerCoords[x1] - self.coordinates[x] #Triangle height to top left pocket
+            deltytl = cornerCoords[y2] - self.coordinates[y] #Triangle base length to top left pocket
+            hypot = math.sqrt( (math.pow(deltxtl,2) - math.pow(deltytl,2) ) ) #Distance formula measuring hypotenuse to top left pocket
+            theta1 = math.atan(deltxtl/deltytl) #angle from cue ball to tl pocket
+            if (theta0 > theta1) #Hitting the top wall
+                thetaf = (math.pi/2)+theta0
+            elif (theta0 < theta1) #Hitting the left wall
+                thetaf = theta0(math.pi/2)
+            else #Gonna scratch it, THROW IN WARNING?
+                pass
+                
+        elif (math.pi < theta0 < (3*math.pi/4)) #Aimed at bottom left corner of table
+            deltxbl = cornerCoords[x1] - self.coordinates[x] #Triangle height to bottom left pocket
+            deltybl = cornerCoords[xy] - self.coordinates[y] #Triangle base length to bottom left pocket
+            hypot = math.sqrt( (math.pow(deltxbl,2) - math.pow(deltybl,2) ) ) #Distance formula measuring hypotenuse to bottom left pocket
+            theta1 = math.atan(deltxbl/deltybl) #angle from cue ball to bl pocket
+            if (theta0 < theta1) #Hitting the left wall
+                thetaf = (math.pi/2)+theta0
+            elif (theta0 > theta1) #Hitting the bottom wall
+                thetaf = theta0-(math.pi/2)
+            else #Gonna scratch it, THROW IN WARNING?
+                pass
+                
+        elif ((3*math.pi/4) < theta0 < 0) #Aimed at bottom right corner of table
+            deltxbr = cornerCoords[x2] - self.coordinates[x] #Triangle height to bottom right pocket
+            deltybr = cornerCoords[xy] - self.coordinates[y] #Triangle base length to bottom right pocket
+            hypotenusebr = math.sqrt( (math.pow(deltxbr,2) - math.pow(deltybr,2) ) ) #Distance formula measuring hypotenuse to bottom right pocket
+            theta1 = math.atan(deltxbr/deltybr) #angle from cue ball to br pocket
+            if (theta0 < theta1) #Hitting the bottom wall
+                thetaf = (math.pi/2)+theta0
+            elif (theta0 > theta1) #Hitting right top wall
+                thetaf = theta0-(math.pi/2)
             else #Gonna scratch it, THROW IN WARNING?
                 pass
 
