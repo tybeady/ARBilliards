@@ -12,12 +12,15 @@ class CollisionMath():
 
 class vector():
 
-	def __init__(self, magnitude = None, direction = None):
+	def __init__(self, magnitude = None, direction = None, startCoords, stopCoords):
 		self._magnitude = magnitude #speed of the ball
 		self._direction = direction #radians
+        self._startCoords = startCoords #(x,y)
+        self._stopCoords = stopCoords #(x,y)
 	
 	def decay(self, resistance, distanceTraveled):
 		#INSERT MATH
+        pass
 
 
 class ball():
@@ -69,39 +72,7 @@ class ball():
             #TODO: add update to self._vector
             
         return newCollideeCoordThetaf, newColliderThetaf, newColliderCoord
-
-		    # def CueObjCollision(i, deltx, delty, thetaf): #Use this when an object ball is identified along the cue trajectory
-    # #Uses radians, can be switched to degrees if needed
-        # deltx = obc[0]-cbc[0] #Triangle height
-        # delty = obc[1]-cbc[1] #Triangle base length	
-        # hypotenuse = math.sqrt( (math.pow(deltx,2) - math.pow(delty,2) ) ) #Distance formula measuring hypotenuse
-        # theta1 = math.atan(deltx/delty)-thetaf[i] #Draw interior angle of projected ob placement
-        # theta2 = math.asin((hypotenuse*math.sin(theta1))/(D)) #Draw interior angle of projected ob placement
-        # theta2min = (math.pi-theta1)/2 #This is the minimum value theta3 can be
-        # theta3 = 180 - theta1 - theta2
-        # thetaDelta = 90 - thetaf[i]
-        # thetaH = theta3 - thetaDelta
-        
-        # endcuexarray[i] = D*cos(thetaH) = startcuexarray[i+1]
-        # endcueyarray[i] = D*sin(thetaH) = startcueyarray[i+1]
-        # if  theta2min >= theta2:
-            # thetaf = (math.pi-theta2)+thetaf[i+1]
-        # else:
-            # thetaf[i+1] = thetaf[i]
-        # if (theta2 > 0) #Aimed to the right of the object ball
-            # thetaTangent[i+1] = thetaf[i+1] - math.pi/2
-        # elif (theta2 < 0) #Aimed to the left of the object ball
-            # thetaTangent[i+1] = thetaf[i+1] + math.pi/2
-        # else: #Aimed directly at the center of the object ball
-            # thetaTangent[i+1] = thetaf[i+1]
-        # CueEndType[i] = 0
-        
-        # return endcuexarray[i], endcueyarray[i], thetaf[i+1], CueEndType[i]
-        
-    # sys.exit(CueObjCollision())
-		
-	
-    
+		    
 	def wallCollision(self, wallResistance, cornerCoords):
     
         # #This whole portion is assuming the grid is layed out correctly on the table. The limits are, for the sake of this code: [0,511] (width) and [0,255] (height)
@@ -112,9 +83,9 @@ class ball():
             hypot = math.sqrt( (math.pow(deltxtr,2) - math.pow(deltytr,2) ) ) #Distance formula measuring hypotenuse to top right pocket
             theta1 = math.atan(deltxtr/deltytr) #angle from cue ball to tr pocket
             if (self.direction < theta1) #Hitting the right wall
-                thetaf = math.pi - self.direction
+                newColliderThetaf = math.pi - self.direction
             elif (self.direction > theta1) #Hitting the top wall
-                thetaf = (-1) * self.direction
+                newColliderThetaf = (-1) * self.direction
             else #Gonna scratch it, THROW IN WARNING?
                 pass
                 
@@ -124,9 +95,9 @@ class ball():
             hypot = math.sqrt( (math.pow(deltxtl,2) - math.pow(deltytl,2) ) ) #Distance formula measuring hypotenuse to top left pocket
             theta1 = math.atan(deltxtl/deltytl) #angle from cue ball to tl pocket
             if (self.direction > theta1) #Hitting the top wall
-                thetaf = (-1) * self.direction
+                newColliderThetaf = (-1) * self.direction
             elif (self.direction < theta1) #Hitting the left wall
-                thetaf = math.pi - self.direction
+                newColliderThetaf = math.pi - self.direction
             else #Gonna scratch it, THROW IN WARNING?
                 pass
                 
@@ -136,9 +107,9 @@ class ball():
             hypot = math.sqrt( (math.pow(deltxbl,2) - math.pow(deltybl,2) ) ) #Distance formula measuring hypotenuse to bottom left pocket
             theta1 = math.atan(deltxbl/deltybl) #angle from cue ball to bl pocket
             if (self.direction < theta1) #Hitting the left wall
-                thetaf = math.pi - self.direction
+                newColliderThetaf = math.pi - self.direction
             elif (self.direction > theta1) #Hitting the bottom wall
-                thetaf = (-1) * self.direction
+                newColliderThetaf = (-1) * self.direction
             else #Gonna scratch it, THROW IN WARNING?
                 pass
                 
@@ -148,73 +119,20 @@ class ball():
             hypot = math.sqrt( (math.pow(deltxbr,2) - math.pow(deltybr,2) ) ) #Distance formula measuring hypotenuse to bottom right pocket
             theta1 = math.atan(deltxbr/deltybr) #angle from cue ball to br pocket
             if (self.direction < theta1) #Hitting the bottom wall
-                thetaf = (-1) * self.direction
+                newColliderThetaf = (-1) * self.direction
             elif (self.direction > theta1) #Hitting right wall
-                thetaf = math.pi - self.direction
+                newColliderThetaf = math.pi - self.direction
             else #Gonna scratch it, THROW IN WARNING?
                 pass
                 
         else 
-            thetaf = self.direction+math.pi #They're just gonna nail the wall head on
+            newColliderThetaf = self.direction+math.pi #They're just gonna nail the wall head on
             #I'm worried about what'll happen if we hit the ball straight to a pocket when shot right next to the wall
-
-    # def CueWallCollision(): #Use this when no object ball is identified along the cue trajectory
-    # #This whole portion is assuming the grid is layed out correctly on the table. The limits are, for the sake of this code: [0,511] (width) and [0,255] (height)
-    # #REMEMBER TO INCLUDE the walla being treated as D/2 closer to the center to account for the ball's radius
-        # if (0 < theta0 < (math.pi/2)) #Aimed at top right corner of the table
-            # deltxtr = 511-cbc[0] #Triangle height to top right pocket
-            # deltytr = 255-cbc[1] #Triangle base length to top right pocket
-            # hypotenusetr = math.sqrt( (math.pow(deltxtr,2) - math.pow(deltytr,2) ) ) #Distance formula measuring hypotenuse to top right pocket
-            # theta1 = math.atan(deltxtr/deltytr) #angle from cue ball to tr pocket
-            # if (theta0 < theta1) #Hitting the right wall
-                # thetaf = (math.pi/2)+theta0
-            # elif (theta0 > theta1) #Hitting the top wall
-                # thetaf = (math.pi/2)-theta0
-            # else #Gonna scratch it, THROW IN WARNING?
-                # pass
-        # elif ((math.pi/2) < theta0 < math.pi) #Aimed at top left corner of table
-            # deltxtl = cbc[0] #Triangle height to top left pocket
-            # deltytl = 255-cbc[1] #Triangle base length to top left pocket
-            # hypotenusetl = math.sqrt( (math.pow(deltxtl,2) - math.pow(deltytl,2) ) ) #Distance formula measuring hypotenuse to top left pocket
-            # theta1 = math.atan(deltxtl/deltytl) #angle from cue ball to tl pocket
-            # if (theta0 > theta1) #Hitting the top wall
-                # thetaf = (math.pi/2)+theta0
-            # elif (theta0 < theta1) #Hitting the left wall
-                # thetaf = theta0(math.pi/2)
-            # else #Gonna scratch it, THROW IN WARNING?
-                # pass
-        # elif (math.pi < theta0 < (3*math.pi/4)) #Aimed at bottom left corner of table
-            # deltxbl = cbc[0] #Triangle height to bottom left pocket
-            # deltybl = cbc[1] #Triangle base length to bottom left pocket
-            # hypotenusebl = math.sqrt( (math.pow(deltxbl,2) - math.pow(deltybl,2) ) ) #Distance formula measuring hypotenuse to bottom left pocket
-            # theta1 = math.atan(deltxbl/deltybl) #angle from cue ball to bl pocket
-            # if (theta0 < theta1) #Hitting the left wall
-                # thetaf = (math.pi/2)+theta0
-            # elif (theta0 > theta1) #Hitting the bottom wall
-                # thetaf = theta0-(math.pi/2)
-            # else #Gonna scratch it, THROW IN WARNING?
-                # pass
-        # elif ((3*math.pi/4) < theta0 < 0) #Aimed at bottom right corner of table
-            # deltxbr = 511-cbc[0] #Triangle height to bottom right pocket
-            # deltybr = cbc[1] #Triangle base length to bottom right pocket
-            # hypotenusebr = math.sqrt( (math.pow(deltxbr,2) - math.pow(deltybr,2) ) ) #Distance formula measuring hypotenuse to bottom right pocket
-            # theta1 = math.atan(deltxbr/deltybr) #angle from cue ball to br pocket
-            # if (theta0 < theta1) #Hitting the bottom wall
-                # thetaf = (math.pi/2)+theta0
-            # elif (theta0 > theta1) #Hitting right top wall
-                # thetaf = theta0-(math.pi/2)
-            # else #Gonna scratch it, THROW IN WARNING?
-                # pass
-        # else 
-            # thetaf = theta0+math.pi #They're just gonna nail the wall head on
-            # CueEndType[i] = 1
-            # #I'm worried about what'll happen if we hit the ball straight to a pocket when shot right next to the wall
-    # sys.exit(CueWallCollision())
-		pass
+            pass
 		
 class events():
-	def __init__(self, time, startCoordinate, stopCoordinate, ballIndex, secondaryBallIdex = None):
-	
+
+	def __init__(self, time, startCoordinate, stopCoordinate, ballIndex, secondaryBallIdex = None):	
         self._startCoordinate = startCoordinate #(x,y)
         self._stopCoordinate = stopCoordinate #(x,y)
 		self._ballIndex = ballIndex #points to collider
@@ -259,3 +177,33 @@ class table():
 					return
 		self._events.append(event.time)
 		return
+        
+    # Code ripped to help collisionCheck    
+    def ccw(A,B,C):
+        return (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x)
+
+    # Return true if line segments AB and CD intersect
+    def intersect(A,B,C,D):
+        return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
+        
+    def collisionCheck(self, colliderBall):
+        eventColls = []
+        ballColls = []
+        while(TRUE):
+            for e in self._events:
+                if(self.intersect(colliderBall[6][4], colliderBall[6][5], e.startCoordinate, e.endCoordinate))
+                    eventColls.append(e)
+            for b in self._ballArr:
+                if(self.intersect(colliderBall[6][4], colliderBall[6][5], b.coordinates, b.coordinates):
+                    ballColls.append(b)
+            return eventColls, ballColls
+        
+    def timeCheck(self, colliderBall, eventColls, ballColls):
+        soonestCollision = 0
+        for e in eventColls:
+            pass # START HERE
+        pass
+        
+    def exactCollision(self, colliderBall):
+        pass
+    
