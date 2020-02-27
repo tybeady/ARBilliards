@@ -2,17 +2,22 @@ import sys
 import numpy
 import math
 
+TIME_INCREMENT = 1
+
+def distanceCalc(p1,p2):
+    return math.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
+
 class CollisionMath():
     def __init__(self, state, force):
         _state = state
         _force = force
 
-    def updateStateSpace(self,Time):
+    def updateStateSpace(self, Time):
         pass
 
 class vector():
 
-    def __init__(self, magnitude = None, direction = None, startCoords, stopCoords):
+    def __init__(self, startCoords, stopCoords, magnitude = None, direction = None):
         self._magnitude = magnitude #speed of the ball
         self._direction = direction #radians
         self._startCoords = startCoords #(x,y)
@@ -25,7 +30,7 @@ class vector():
 
 class ball():
 
-    def __init__(self, active, type, diameter, coordinates, vector = vector()):
+    def __init__(self, active, type, diameter, coordinates, vector = vector(coordinates,coordinates)):
         self._active = active #if on table then TRUE else FALSE
         self._type = type #0 if cue ball 1 if object ball
         self._diameter = diameter #scaling for vector math purposes
@@ -129,19 +134,21 @@ class ball():
             newColliderThetaf = self.direction+math.pi #They're just gonna nail the wall head on
             #I'm worried about what'll happen if we hit the ball straight to a pocket when shot right next to the wall
             pass
+        self._vector.direction = newColliderThetaf
 
 class events():
 
-    def __init__(self, time, startCoordinate, stopCoordinate, ballIndex, secondaryBallIdex = None):	
+    def __init__(self, time, startCoordinate, stopCoordinate, eventType, ballIndex, secondaryBallIdex = None):	
         self._startCoordinate = startCoordinate #(x,y)
         self._stopCoordinate = stopCoordinate #(x,y)
+        self._eventType = eventType #points to collider
         self._ballIndex = ballIndex #points to collider
         self._secondaryBallIndex = secondaryBallIdex #None if wall
         self._time = time #points to when collision happens
 
 class table():
 
-    def __init__(self, cornerCoords, ballArr = [], wallResistance, feltResistance):
+    def __init__(self, cornerCoords, wallResistance, feltResistance, ballArr = []):
         self._cornerCoords = cornerCoords #pass two tuples in array forming diagonal of table [(x1,y1),(x2,y2)]
         self._ballArr = ballArr
         self._wallResistance = wallResistance
@@ -166,8 +173,33 @@ class table():
         self._ballArr.append(ball)
         return
 
-    def takeStep(self):
-        nextEvent = self._events.pop(0)
+    def takeStep(self, eventIndex):
+        if eventIndex == -1:
+            cueB = self._ballArr[0]
+            newEvent = self.collisionCheck(cueB,0)
+            self.addEvent(newEvent)
+        else:
+            currEvent = self._events[eventIndex]
+            #Ball Collision
+            if currEvent._eventType = 0:
+                self._ballArr[currEvent._ballIndex].ballCollision(self._ballArr[currEvent._secondaryBallIndex])
+                newEvent = self.collisionCheck(currEvent._ballIndex,currEvent._time,eventIndex)
+                self.addEvent(newEvent)
+                newEvent = self.collisionCheck(currEvent._secondaryBallIndex,currEvent._time,eventIndex)
+                self.addEvent(newEvent)
+            #Wall Collision
+            elif currEvent._eventType = 1:
+                self._ballArr[currEvent._ballIndex].wallCollision(self._wallResistance,self._cornerCoords)
+                newEvent = self.collisionCheck(currEvent._ballIndex,currEvent._time,eventIndex)
+                self.addEvent(newEvent)
+            #Null Collision
+            elif currEvent._eventType = 2:
+                d = distanceCalc(currEvent._startCoordinate,currEvent._stopCoordinate)
+                self._ballArr[currEvent._ballIndex].nullCollision(d)
+                newEvent = self.collisionCheck(currEvent._ballIndex,currEvent._time,eventIndex)
+                self.addEvent(newEvent)
+        
+        self.takeStep(eventIndex+1)
 
     def addEvent(self,events):
         if self._events:
@@ -186,19 +218,22 @@ class table():
     def intersect(A,B,C,D):
         return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
 
-    def collisionCheck(self, colliderBall):
+    def collisionCheck(self, colliderBall, startTime,eventIndex = 0):
         eventColls = []
         ballColls = []
         #while(TRUE):
-        for e in self._events:
+        for e in self._events[eventIndex:]:
             if(self.intersect(colliderBall[6][4], colliderBall[6][5], e.startCoordinate, e.endCoordinate)):
                 eventColls.append(e)
         for b in self._ballArr:
             if(self.intersect(colliderBall[6][4], colliderBall[6][5], b.coordinates, b.coordinates)):
                 ballColls.append(b)
+        #event = self.timeCheck(colliderBall, startTime, eventColls,ballColls)
+        #return event
         return eventColls, ballColls
         
-    def timeCheck(self, colliderBallID, eventColls, ballColls):
+    def timeCheck(self, colliderBall, startTime, eventColls, ballColls):
+        #if ballColls and eventColls empty then Wall
         # soonestCollision = #Define crazy too long time
         # for e in eventColls:
             # if: #Identify colliderBallID how?
@@ -207,9 +242,32 @@ class table():
             # if:
                 # soonestCollision = e
         # return soonestCollision
+        
+        #create shortest Event
+        #return Event
         pass
         
     def exactCollision(self, colliderBall, soonestCollision):
             
         pass
+    
+    def tableStateSnapshot(self, time):
+        eventBalls = []
+        resultCoords = []
+        for e in self._events
+            if e._time > time:
+                eventBalls.append(e._ballIndex)
+                v = self._ballArr[e._ballIndex].getVector()
+                d = distanceCalc(v._startCoords,v._stopCoords)
+                startTime = event._time - d/v._magnitude #start Time of event
+                SnapShotTravelTime = time - startTime
+                SnapShotDistance = SnapShotTravelTime * v._magnitude
+                u = ((v._stopCoords[0] - v._startCoords[0])/d,(v._stopCoords[1] - v._startCoords[1])/d)
+                SnapShotCoords = (v._startCoords[0] + u[0]*SnapShotDistance,v._startCoords[1] + u[1]*SnapShotDistance
+                resultCoords.append(SnapShotCoords)
+        for i in range(len(self._ballArr)):
+            if i not in eventBalls:
+                resultCoords.append(self._ballArr[i]._coordinates)
+        return resultCoords
+        
     

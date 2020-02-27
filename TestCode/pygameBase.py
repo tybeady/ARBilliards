@@ -2,7 +2,7 @@ import pygame, sys, time
 
 from pygame.locals import *
 
-
+import ./Collisions
 
 # set up pygame
 
@@ -20,47 +20,23 @@ windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 32)
 
 pygame.display.set_caption('Animation')
 
+BallCount = 9
 
+BallCoords = [(100,100),(200,100),(300,100),(100,200),(200,200),(300,200),(100,300),(200,300),(300,300),]
 
-# set up direction variables
+t = table([(0,0),(WINDOWWIDTH,WINDOWHEIGHT)],0,0)
 
-DOWNLEFT = 1
-
-DOWNRIGHT = 3
-
-UPLEFT = 7
-
-UPRIGHT = 9
-
-
-
-MOVESPEED = 4
-
-
-# set up the colors
-
-BLACK = (0, 0, 0)
-
-RED = (255, 0, 0)
-
-GREEN = (0, 255, 0)
+for i in range(BallCount-1):
+    t.addBall(ball(1,1,10,BallCoords[i]))
+    
+t._ballArr[0]._vector._magnitude = 5
+t._ballArr[0]._vector._direction = 0.6
 
 BLUE = (0, 0, 255)
 
 
-
-# set up the block data structure
-
-b1 = {'rect':pygame.Rect(300, 80, 50, 100), 'color':RED, 'dir':UPRIGHT}
-
-b2 = {'rect':pygame.Rect(200, 200, 20, 20), 'color':GREEN, 'dir':UPLEFT}
-
-b3 = {'rect':pygame.Rect(100, 150, 60, 60), 'color':BLUE, 'dir':DOWNLEFT}
-
-blocks = [b1, b2, b3]
-
-
-
+resultCoords = []
+currTime = 0
 # run the game loop
 
 while True:
@@ -82,91 +58,14 @@ while True:
     windowSurface.fill(BLACK)
 
 
+    resultCoords = table().tableStateSnapshot(currTime)
+    for r in resultCoords:
 
-    for b in blocks:
-
-        # move the block data structure
-
-        if b['dir'] == DOWNLEFT:
-
-            b['rect'].left -= MOVESPEED
-
-            b['rect'].top += MOVESPEED
-
-        if b['dir'] == DOWNRIGHT:
-
-            b['rect'].left += MOVESPEED
-
-            b['rect'].top += MOVESPEED
-
-        if b['dir'] == UPLEFT:
-
-            b['rect'].left -= MOVESPEED
-
-            b['rect'].top -= MOVESPEED
-
-        if b['dir'] == UPRIGHT:
-
-            b['rect'].left += MOVESPEED
-
-            b['rect'].top -= MOVESPEED
-
-
-
-        # check if the block has moved out of the window
-
-        if b['rect'].top < 0:
-
-            # block has moved past the top
-
-            if b['dir'] == UPLEFT:
-
-                b['dir'] = DOWNLEFT
-
-            if b['dir'] == UPRIGHT:
-
-                b['dir'] = DOWNRIGHT
-
-        if b['rect'].bottom > WINDOWHEIGHT:
-
-            # block has moved past the bottom
-
-            if b['dir'] == DOWNLEFT:
-
-                b['dir'] = UPLEFT
-
-            if b['dir'] == DOWNRIGHT:
-
-                b['dir'] = UPRIGHT
-
-        if b['rect'].left < 0:
-
-            # block has moved past the left side
-
-            if b['dir'] == DOWNLEFT:
-
-                b['dir'] = DOWNRIGHT
-
-            if b['dir'] == UPLEFT:
-
-                b['dir'] = UPRIGHT
-
-        if b['rect'].right > WINDOWWIDTH:
-
-            # block has moved past the right side
-
-            if b['dir'] == DOWNRIGHT:
-
-                b['dir'] = DOWNLEFT
-
-            if b['dir'] == UPRIGHT:
-
-                b['dir'] = UPLEFT
+        
 
 
        # draw the block onto the surface
-
-        pygame.draw.rect(windowSurface, b['color'], b['rect'])
+        pygame.draw.circle(windowSurface, BLUE, r, 40)
 
 
 
@@ -175,3 +74,4 @@ while True:
     pygame.display.update()
 
     time.sleep(0.02)
+    currTime += 1
