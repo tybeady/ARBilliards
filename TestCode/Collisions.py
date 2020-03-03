@@ -213,3 +213,6 @@ class table():
             
         pass
     
+def main():
+    addBall(TRUE, 0, 59)
+    pass
