@@ -245,7 +245,20 @@ class table():
         
         #create shortest Event
         #return Event
-        pass
+        
+        soonestCollision = event(999999, None, None, None, None, None)
+        if eventColls != None:
+            for e in eventColls:
+                if e.time > startTime and e.time < soonestCollision.time: #Identify colliderBallID how?
+                    soonestCollision = e
+        elif ballColls != None:
+            for b in ballColls:
+                if b.time > startTime and e.time < soonestCollision.time:
+                soonestCollision = e
+                return soonestCollision
+        else:
+            # Wall Collision
+            pass
         
     def exactCollision(self, colliderBall, soonestCollision):
             
