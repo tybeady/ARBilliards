@@ -22,12 +22,19 @@ class vector():
         self._direction = direction #radians
         self._startCoords = startCoords #(x,y)
         self._stopCoords = stopCoords #(x,y)
-        
-    def makeNewVector(self, newTrajAngle, startCoords, power = None)
-        
 
     def decay(self, resistance, distanceTraveled):
         #INSERT MATH
+        pass
+        
+    def makeNewVector(self, newTrajAngle, startCoords, magnitude = None):
+        # newVector = []
+        # stopCoords = []
+        # distance = 
+        # stopCoords[0] = distance
+        # stopCoords[1] = 
+        # newVector = vector(startCoords, stopCoords)
+        # return newVector
         pass
 
 
@@ -82,7 +89,7 @@ class ball():
             else: #Aimed directly at the center of the object ball
                 newCollideeThetaf = newColliderThetaf
                 newCollideeMagnitude = self.vector.magnitude
-                self.vector,magnitude = 0
+                self.vector.magnitude = 0
             newColliderCoord[0] = collideeBall._coordinates[0] + self._diameter*math.cos(thetaH)
             newColliderCoord[1] = collideeBall._coordinates[1] + self._diameter*math.sin(thetaH)
             collideeBall.vector = makeNewVector(newCollideeThetaf, collideeBall.coordinates, newCollideeMagnitude)
