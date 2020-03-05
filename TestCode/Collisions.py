@@ -266,7 +266,10 @@ class table():
             # Wall Collision
             pass
         
+    # Determines where along the line a collision will occur based on collisionCheck
+    # Can return that the time doesn't line up, must move on to collision before?
     def exactCollision(self, colliderBall, soonestCollision):
+        #timeTravelledCollidee = 
         pass
     
     def tableStateSnapshot(self, time):
