@@ -22,6 +22,9 @@ class vector():
         self._direction = direction #radians
         self._startCoords = startCoords #(x,y)
         self._stopCoords = stopCoords #(x,y)
+        
+    def makeNewVector(self, newTrajAngle, startCoords, power = None)
+        
 
     def decay(self, resistance, distanceTraveled):
         #INSERT MATH
@@ -30,12 +33,14 @@ class vector():
 
 class ball():
 
-    def __init__(self, active, type, diameter, coordinates, vector = vector(coordinates,coordinates)):
+    def __init__(self, active, type, diameter, coordinates, passedVector = None):
         self._active = active #if on table then TRUE else FALSE
         self._type = type #0 if cue ball 1 if object ball
         self._diameter = diameter #scaling for vector math purposes
         self._coordinates = coordinates #(x,y)
-        self._vector = vector #see vector class
+        self._vector = passedVector #see vector class
+        if passedVector == None:
+            self._vector = vector(coordinates, coordinates)
 
     def getVector(self):
         return self._vector
@@ -60,21 +65,32 @@ class ball():
             thetaDelta = math.pi/2 - self._direction
             thetaH = theta3 - thetaDelta
             # Calculate new starting coordinates and vectors
-            if  theta2min >= theta2:
-                newColliderThetaf = (math.pi-theta2)+self.direction
+            if  theta2min > theta2:
+                newColliderThetaf = (theta2)+self.direction
+            elif theta2min < theta2:
+                newColliderThetaf = (math.pi-theta2)+elf.direction
             else:
                 newColliderThetaf = self.direction
             if (theta2 > 0): #Aimed to the right of the object ball
                 newCollideeThetaf = newColliderThetaf - math.pi/2
+                newCollideeMagnitude = self.vector.magnitude*math.sin(thetaH)
+                newColliderMagnitude = self.vector.magnitude*math.cos(thetaH)
             elif (theta2 < 0): #Aimed to the left of the object ball
                 newCollideeThetaf = newColliderThetaf + math.pi/2
+                newCollideeMagnitude = self.vector.magnitude*math.cos(thetaH)
+                newColliderMagnitude = self.vector.magnitude*math.sin(thetaH)
             else: #Aimed directly at the center of the object ball
                 newCollideeThetaf = newColliderThetaf
-            newColliderCoord[0] = self._coordinates[0] + self._diameter*cos(thetaH)
-            newColliderCoord[1] = self._coordinates[1] + self._diameter*sin(thetaH)
+                newCollideeMagnitude = self.vector.magnitude
+                self.vector,magnitude = 0
+            newColliderCoord[0] = collideeBall._coordinates[0] + self._diameter*math.cos(thetaH)
+            newColliderCoord[1] = collideeBall._coordinates[1] + self._diameter*math.sin(thetaH)
+            collideeBall.vector = makeNewVector(newCollideeThetaf, collideeBall.coordinates, newCollideeMagnitude)
+            self.vector = makeNewVector(newColliderThetaf, newColliderCoord, newColliderMagnitude)
             #TODO: Add vector magnitude degeneration
             #TODO: Add in time implementation
             #TODO: add update to self._vector
+            
             
         return newCollideeCoordThetaf, newColliderThetaf, newColliderCoord
 
