@@ -2,7 +2,7 @@ bokeh==1.4.0
 Jinja2==2.10.3
 MarkupSafe==1.1.1
 numpy==1.17.2
-opencv-python==4.1.1.26
+opencv-python==4.2.0.32
 packaging==19.2
 Pillow==6.2.1
 pyparsing==2.4.4
