@@ -1,5 +1,5 @@
 Django==2.2.6
-numpy==1.17.2
+numpy==1.22.0
 pytz==2019.2
 sqlparse==0.3.0
 virtualenv==16.7.5
